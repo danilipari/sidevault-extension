@@ -7,20 +7,37 @@ const STORAGE_KEYS = {
 
 export async function storageGet<T>(key: string): Promise<T | null> {
   try {
+    console.log(`[SideVault Storage] Getting key "${key}"...`)
     const result = await chrome.storage.local.get(key)
-    return result[key] ?? null
+    let value = result[key] ?? null
+
+    // Handle legacy data: convert object with numeric keys to array
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const keys = Object.keys(value)
+      if (keys.length > 0 && keys.every(k => !isNaN(Number(k)))) {
+        console.log(`[SideVault Storage] Converting object to array for "${key}"`)
+        value = Object.values(value) as T
+      }
+    }
+
+    console.log(`[SideVault Storage] Got for "${key}":`, value)
+    return value
   } catch (error) {
-    console.error(`Storage get error for key "${key}":`, error)
+    console.error(`[SideVault Storage] Get error for key "${key}":`, error)
     return null
   }
 }
 
 export async function storageSet<T>(key: string, value: T): Promise<boolean> {
   try {
-    await chrome.storage.local.set({ [key]: value })
+    // Convert Vue Proxy to plain object/array for chrome.storage
+    const plainValue = JSON.parse(JSON.stringify(value))
+    console.log(`[SideVault Storage] Setting key "${key}":`, plainValue)
+    await chrome.storage.local.set({ [key]: plainValue })
+    console.log(`[SideVault Storage] Set success for "${key}"`)
     return true
   } catch (error) {
-    console.error(`Storage set error for key "${key}":`, error)
+    console.error(`[SideVault Storage] Set error for key "${key}":`, error)
     return false
   }
 }

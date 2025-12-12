@@ -56,7 +56,7 @@ function updateBodyMargin() {
   } else if (isExpanded.value) {
     document.body.style.marginRight = '320px'
   } else {
-    document.body.style.marginRight = '48px'
+    document.body.style.marginRight = '40px'
   }
 }
 
@@ -81,13 +81,17 @@ async function saveCurrentPage() {
     favicon: getFaviconUrl(window.location.href),
   }
 
+  console.log('[SideVault] Saving page:', pageData)
+
   // Expand sidebar to show the saved page
   isExpanded.value = true
 
   try {
-    await pagesStore.addPage(pageData)
+    const saved = await pagesStore.addPage(pageData)
+    console.log('[SideVault] Page saved:', saved)
+    console.log('[SideVault] Total pages now:', pagesStore.pages.length)
   } catch (error) {
-    console.error('Failed to save page:', error)
+    console.error('[SideVault] Failed to save page:', error)
   }
 }
 
@@ -101,12 +105,46 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 })
 
+// Listen for storage changes (from other tabs)
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== 'local') return
+
+  if (changes.sidevault_pages) {
+    console.log('[SideVault] Pages changed in storage, reloading...')
+    const newPages = changes.sidevault_pages.newValue
+    if (Array.isArray(newPages)) {
+      pagesStore.pages = newPages
+    }
+  }
+
+  if (changes.sidevault_categories) {
+    console.log('[SideVault] Categories changed in storage, reloading...')
+    const newCategories = changes.sidevault_categories.newValue
+    if (Array.isArray(newCategories)) {
+      categoriesStore.categories = newCategories
+    }
+  }
+
+  if (changes.sidevault_tags) {
+    console.log('[SideVault] Tags changed in storage, reloading...')
+    const newTags = changes.sidevault_tags.newValue
+    if (Array.isArray(newTags)) {
+      tagsStore.tags = newTags
+    }
+  }
+})
+
 onMounted(async () => {
+  console.log('[SideVault] Component mounting, initializing stores...')
+
   await Promise.all([
     pagesStore.initialize(),
     categoriesStore.initialize(),
     tagsStore.initialize()
   ])
+
+  console.log('[SideVault] Stores initialized, pages loaded:', pagesStore.pages.length)
+  console.log('[SideVault] Pages:', pagesStore.pages)
 
   // Set initial state based on saved pages
   isExpanded.value = pagesStore.pages.length === 0
@@ -131,7 +169,7 @@ onMounted(async () => {
             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
           </svg>
         </button>
-        <button class="sv-btn sv-btn-primary" @click="saveCurrentPage" title="Save page" style="margin-top: 8px;">
+        <button class="sv-btn sv-btn-primary" @click="saveCurrentPage" title="Save page">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>

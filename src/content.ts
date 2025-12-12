@@ -60,7 +60,7 @@ if (isValidPage) {
     }
 
     .sidevault-sidebar.collapsed {
-      width: 48px;
+      width: 40px;
     }
 
     .sidevault-sidebar.expanded {
@@ -78,9 +78,10 @@ if (isValidPage) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 8px;
+      padding: 6px;
       border-bottom: 1px solid #e5e7eb;
       background: white;
+      gap: 6px;
     }
 
     .sv-header.expanded {
@@ -118,8 +119,8 @@ if (isValidPage) {
     }
 
     .sv-btn-icon {
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       background: transparent;
       color: #6b7280;
     }
@@ -130,8 +131,8 @@ if (isValidPage) {
     }
 
     .sv-btn-primary {
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       background: #3b82f6;
       color: white;
     }
@@ -141,8 +142,8 @@ if (isValidPage) {
     }
 
     .sv-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
     }
 
     /* Content area */
@@ -170,14 +171,17 @@ if (isValidPage) {
     }
 
     .sv-icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       background: #f3f4f6;
       border: none;
       cursor: pointer;
       overflow: hidden;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .sv-icon-btn:hover {
@@ -185,8 +189,8 @@ if (isValidPage) {
     }
 
     .sv-icon-btn img {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       object-fit: contain;
     }
 

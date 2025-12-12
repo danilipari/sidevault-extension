@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.ts-B-_ir5tF.js"
+        "assets/content.ts-DokEc_FL.js"
       ],
       "matches": [
         "<all_urls>"
@@ -34,8 +34,8 @@
       ],
       "resources": [
         "icons/*",
-        "assets/content.ts-B-_ir5tF.js",
-        "assets/content.ts-B-_ir5tF.js.map"
+        "assets/content.ts-DokEc_FL.js",
+        "assets/content.ts-DokEc_FL.js.map"
       ],
       "use_dynamic_url": false
     }
