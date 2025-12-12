@@ -231,6 +231,24 @@ if (isValidPage) {
       background: #f3f4f6;
     }
 
+    .sv-page-card.dragging {
+      opacity: 0.5;
+      background: #e5e7eb;
+    }
+
+    .sv-page-card.drag-over {
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+    }
+
+    .sv-page-card[draggable="true"] {
+      cursor: grab;
+    }
+
+    .sv-page-card[draggable="true"]:active {
+      cursor: grabbing;
+    }
+
     .sv-page-thumb {
       width: 48px;
       height: 48px;
@@ -262,7 +280,7 @@ if (isValidPage) {
 
     .sv-page-title {
       font-weight: 500;
-      font-size: 14px;
+      font-size: 13px;
       color: #1f2937;
       white-space: nowrap;
       overflow: hidden;
@@ -270,11 +288,56 @@ if (isValidPage) {
     }
 
     .sv-page-domain {
-      font-size: 12px;
+      font-size: 11px;
       color: #6b7280;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .sv-page-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .sv-page-card:hover .sv-page-actions {
+      opacity: 1;
+    }
+
+    .sv-action-btn {
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .sv-action-btn:hover {
+      background: #e5e7eb;
+      color: #6b7280;
+    }
+
+    .sv-action-btn.active {
+      color: #fbbf24;
+    }
+
+    .sv-action-btn.delete:hover {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    .sv-action-btn svg {
+      width: 14px;
+      height: 14px;
     }
 
     /* Search */

@@ -217,6 +217,7 @@ export const usePagesStore = defineStore('pages', () => {
     setFilters,
     clearFilters,
     setSort,
-    findByUrl
+    findByUrl,
+    persist
   }
 })

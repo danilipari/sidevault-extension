@@ -73,6 +73,72 @@ function openPage(page: Page) {
   window.open(page.url, '_blank')
 }
 
+async function toggleFavorite(page: Page, event: Event) {
+  event.stopPropagation()
+  await pagesStore.toggleFavorite(page.id)
+}
+
+async function deletePage(page: Page, event: Event) {
+  event.stopPropagation()
+  if (confirm(`Delete "${page.title}"?`)) {
+    await pagesStore.deletePage(page.id)
+  }
+}
+
+// Drag & Drop
+const draggedPageId = ref<string | null>(null)
+const dragOverPageId = ref<string | null>(null)
+
+function onDragStart(event: DragEvent, page: Page) {
+  draggedPageId.value = page.id
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', page.id)
+  }
+}
+
+function onDragOver(event: DragEvent, page: Page) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+  }
+  if (draggedPageId.value !== page.id) {
+    dragOverPageId.value = page.id
+  }
+}
+
+function onDragLeave() {
+  dragOverPageId.value = null
+}
+
+function onDrop(event: DragEvent, targetPage: Page) {
+  event.preventDefault()
+  if (draggedPageId.value && draggedPageId.value !== targetPage.id) {
+    reorderPages(draggedPageId.value, targetPage.id)
+  }
+  draggedPageId.value = null
+  dragOverPageId.value = null
+}
+
+function onDragEnd() {
+  draggedPageId.value = null
+  dragOverPageId.value = null
+}
+
+async function reorderPages(fromId: string, toId: string) {
+  const pages = [...pagesStore.pages]
+  const fromIndex = pages.findIndex(p => p.id === fromId)
+  const toIndex = pages.findIndex(p => p.id === toId)
+
+  if (fromIndex === -1 || toIndex === -1) return
+
+  const [movedPage] = pages.splice(fromIndex, 1)
+  pages.splice(toIndex, 0, movedPage)
+
+  pagesStore.pages = pages
+  await pagesStore.persist()
+}
+
 async function saveCurrentPage() {
   const pageData = {
     url: window.location.href,
@@ -274,7 +340,17 @@ onMounted(async () => {
             v-for="page in filteredPages"
             :key="page.id"
             class="sv-page-card"
+            :class="{
+              'dragging': draggedPageId === page.id,
+              'drag-over': dragOverPageId === page.id
+            }"
+            draggable="true"
             @click="openPage(page)"
+            @dragstart="onDragStart($event, page)"
+            @dragover="onDragOver($event, page)"
+            @dragleave="onDragLeave"
+            @drop="onDrop($event, page)"
+            @dragend="onDragEnd"
           >
             <div class="sv-page-thumb">
               <img
@@ -291,6 +367,27 @@ onMounted(async () => {
             <div class="sv-page-info">
               <div class="sv-page-title">{{ page.title }}</div>
               <div class="sv-page-domain">{{ page.domain }}</div>
+            </div>
+            <div class="sv-page-actions">
+              <button
+                class="sv-action-btn"
+                :class="{ active: page.isFavorite }"
+                @click="toggleFavorite(page, $event)"
+                title="Toggle favorite"
+              >
+                <svg viewBox="0 0 24 24" :fill="page.isFavorite ? 'currentColor' : 'none'" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              </button>
+              <button
+                class="sv-action-btn delete"
+                @click="deletePage(page, $event)"
+                title="Delete"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
