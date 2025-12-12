@@ -1,0 +1,36 @@
+{
+  "name": "sidevault-extension",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Save, organize and search your favorite web pages with a beautiful sidebar",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run clean && npm run type-check && vite build && npm run build:css",
+    "build:css": "npx tailwindcss -i ./src/assets/tailwind.css -o ./dist/tailwind.css --minify",
+    "type-check": "vue-tsc --noEmit",
+    "preview": "vite preview",
+    "clean": "rm -rf node_modules/.vite dist"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.0.15",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.23",
+    "@tailwindcss/postcss": "^4.0.15",
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.11.24",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^4.0.15",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.5",
+    "vue-tsc": "^2.0.6"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
