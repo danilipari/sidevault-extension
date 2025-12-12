@@ -7,8 +7,7 @@
   "permissions": [
     "storage",
     "activeTab",
-    "tabs",
-    "sidePanel"
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -17,11 +16,32 @@
     "service_worker": "service-worker-loader.js",
     "type": "module"
   },
-  "side_panel": {
-    "default_path": "sidepanel.html"
-  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/content.ts-B-_ir5tF.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "icons/*",
+        "assets/content.ts-B-_ir5tF.js",
+        "assets/content.ts-B-_ir5tF.js.map"
+      ],
+      "use_dynamic_url": false
+    }
+  ],
   "action": {
-    "default_title": "Open SideVault",
+    "default_title": "Toggle SideVault",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -39,7 +59,7 @@
         "default": "Ctrl+Shift+P",
         "mac": "Command+Shift+P"
       },
-      "description": "Open SideVault sidebar"
+      "description": "Toggle SideVault sidebar"
     },
     "save_current_page": {
       "suggested_key": {

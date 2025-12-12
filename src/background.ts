@@ -1,13 +1,17 @@
 // SideVault Background Service Worker
 
-// Open side panel when extension icon is clicked
+// Toggle sidebar when extension icon is clicked
 chrome.action.onClicked.addListener(async (tab) => {
   if (tab.id) {
-    await chrome.sidePanel.open({ tabId: tab.id })
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_SIDEBAR' })
+    } catch (error) {
+      console.log('Content script not loaded yet, injecting...')
+    }
   }
 })
 
-// Handle messages from side panel
+// Handle messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'CAPTURE_SCREENSHOT') {
     handleScreenshotCapture(message.tabId, message.options)
@@ -26,17 +30,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return false
 })
 
-// Handle keyboard shortcut for saving current page
+// Handle keyboard shortcuts
 chrome.commands.onCommand.addListener(async (command) => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+
+  if (!tab?.id) return
+
+  if (command === '_execute_action') {
+    // Toggle sidebar
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_SIDEBAR' })
+    } catch (error) {
+      console.log('Content script not loaded')
+    }
+  }
+
   if (command === 'save_current_page') {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (tab?.id) {
-      // Open side panel and send save command
-      await chrome.sidePanel.open({ tabId: tab.id })
-      // Small delay to ensure panel is ready
-      setTimeout(() => {
-        chrome.runtime.sendMessage({ type: 'TRIGGER_SAVE', tab })
-      }, 300)
+    // Trigger save in content script
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'TRIGGER_SAVE' })
+    } catch (error) {
+      console.log('Content script not loaded')
     }
   }
 })
@@ -69,9 +83,5 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | null> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   return tab || null
 }
-
-// Set side panel behavior - open on action click
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })
-  .catch((error) => console.error('Failed to set panel behavior:', error))
 
 console.log('SideVault background service worker initialized')

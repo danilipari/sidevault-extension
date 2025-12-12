@@ -1,0 +1,4 @@
+/* Content script styles - main styles are in shadow DOM */
+#sidevault-root {
+  all: initial;
+}

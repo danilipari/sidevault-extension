@@ -2,10 +2,6 @@
 import { computed } from 'vue'
 import { usePagesStore, useCategoriesStore, useUiStore } from '@/stores'
 
-const emit = defineEmits<{
-  collapse: []
-}>()
-
 const pagesStore = usePagesStore()
 const categoriesStore = useCategoriesStore()
 const uiStore = useUiStore()
@@ -58,17 +54,6 @@ const pageCount = computed(() => {
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-      </button>
-
-      <!-- Collapse button -->
-      <button
-        @click="emit('collapse')"
-        class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        title="Collapse sidebar"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
         </svg>
       </button>
     </div>
